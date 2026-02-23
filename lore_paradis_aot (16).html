@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Chroniques de Paradis — Lore AoT RP</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f2e8c9;
+    --parchment-dark: #d4c49a;
+    --ink: #1a0e00;
+    --ink-fade: #3a2a10;
+    --red: #7a1a0a;
+    --red-bright: #a02010;
+    --gold: #8b6914;
+    --gold-bright: #c49a28;
+    --brown: #4a2e0a;
+    --shadow: rgba(10,5,0,0.7);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    background: #0d0800;
+    color: var(--ink);
+    font-family: 'IM Fell English', serif;
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='3' fill='%238b6914'/%3E%3C/svg%3E") 10 10, auto;
+  }
+
+  /* DESK BACKGROUND */
+  #desk-bg {
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 55% 70% at 50% -5%, rgba(255,200,80,0.22) 0%, rgba(200,130,30,0.10) 35%, transparent 65%),
+      radial-gradient(ellipse 70% 45% at 50% 100%, rgba(180,110,20,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse 30% 100% at 0% 50%, rgba(0,0,0,0.7) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 100% at 100% 50%, rgba(0,0,0,0.7) 0%, transparent 60%),
+      repeating-linear-gradient(
+        92deg,
+        transparent 0px, rgba(255,255,255,0.012) 1px,
+        transparent 2px, rgba(0,0,0,0.04) 3px,
+        transparent 6px
+      ),
+      repeating-linear-gradient(
+        88deg,
+        transparent 0px, rgba(120,60,10,0.06) 2px,
+        transparent 8px, rgba(80,35,5,0.04) 10px,
+        transparent 18px
+      ),
+      linear-gradient(180deg,
+        #1a0e05 0%,
+        #221208 8%,
+        #2a1608 18%,
+        #1e1005 35%,
+        #251408 55%,
+        #1c0e05 75%,
+        #150b03 100%
+      );
+    pointer-events:none;
+  }
+
+  #desk-lamp {
+    position:fixed; top:0; left:50%; transform:translateX(-50%);
+    z-index:1; pointer-events:none;
+    width:200px;
+  }
+  #desk-lamp::before {
+    content:'';
+    position:absolute; top:0; left:50%;
+    width:2px; height:60px;
+    background:linear-gradient(180deg, #1a1008, #3a2010);
+    transform:translateX(-50%);
+  }
+  #desk-lamp::after {
+    content:'';
+    position:absolute; top:55px; left:50%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:55px solid transparent;
+    border-right:55px solid transparent;
+    border-top:35px solid #2a1a08;
+    filter:drop-shadow(0 0 12px rgba(255,180,40,0.3));
+  }
+
+  #lamp-glow {
+    position:fixed; top:85px; left:50%;
+    transform:translateX(-50%);
+    z-index:1; pointer-events:none;
+    width:14px; height:14px;
+    border-radius:50%;
+    background:radial-gradient(circle, #fff8d0 0%, #ffcc44 40%, #ff9900 80%, transparent 100%);
+    box-shadow:
+      0 0 8px 4px rgba(255,200,60,0.9),
+      0 0 20px 10px rgba(255,160,30,0.6),
+      0 0 50px 25px rgba(255,130,20,0.3);
+    animation: bulbFlicker 8s infinite;
+  }
+
+  #light-cone {
+    position:fixed; top:95px; left:50%;
+    transform:translateX(-50%);
+    z-index:1; pointer-events:none;
+    width:0; height:0;
+    border-left:340px solid transparent;
+    border-right:340px solid transparent;
+    border-top:calc(100vh - 95px) solid rgba(255,180,40,0.055);
+    animation: lightFlicker 8s infinite;
+    filter:blur(30px);
+  }
+
+  #dust-canvas {
+    position:fixed; top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none; z-index:2;
+  }
+
+  @keyframes bulbFlicker {
+    0%,100%{opacity:1}
+    3%{opacity:0.85}
+    6%{opacity:1}
+    40%{opacity:0.97}
+    41%{opacity:0.88}
+    42%{opacity:1}
+    75%{opacity:0.95}
+    76%{opacity:1}
+  }
+  @keyframes lightFlicker {
+    0%,100%{opacity:1}
+    3%{opacity:0.7}
+    6%{opacity:1}
+    40%{opacity:0.9}
+    41%{opacity:0.75}
+    42%{opacity:1}
+  }
+
+  /* QUILL PEN */
+  #quill-wrap {
+    position:fixed;
+    right: 3vw;
+    top: 50%;
+    transform: translateY(-50%) scaleY(-1);
+    z-index: 10;
+    pointer-events:none;
+    width:200px;
+    opacity:0;
+    animation: quillAppear 1.5s 1.2s forwards;
+  }
+  @keyframes quillAppear {
+    from{opacity:0;}
+    to{opacity:1;}
+  }
+
+  /* Ink bottle — décalé vers la gauche */
+  #ink-bottle {
+    position:fixed;
+    right: 13vw;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index:10;
+    pointer-events:none;
+    opacity:0;
+    animation: quillAppear 1.5s 1.5s forwards;
+  }
+
+  .outer-frame {
+    position: relative;
+    max-width: 960px;
+    margin: 0 auto;
+    z-index: 3;
+  }
+
+  .parchment-body {
+    background:
+      radial-gradient(ellipse 30% 8% at 15% 12%, rgba(60,30,5,0.25) 0%, transparent 100%),
+      radial-gradient(ellipse 20% 6% at 85% 8%, rgba(50,20,3,0.2) 0%, transparent 100%),
+      radial-gradient(ellipse 25% 5% at 70% 92%, rgba(60,25,5,0.22) 0%, transparent 100%),
+      radial-gradient(ellipse 15% 10% at 5% 55%, rgba(40,18,3,0.18) 0%, transparent 100%),
+      radial-gradient(ellipse 120% 10% at 50% 0%, rgba(100,60,10,0.5) 0%, transparent 100%),
+      radial-gradient(ellipse 120% 10% at 50% 100%, rgba(80,40,5,0.6) 0%, transparent 100%),
+      radial-gradient(ellipse 5% 100% at 0% 50%, rgba(80,40,5,0.45) 0%, transparent 100%),
+      radial-gradient(ellipse 5% 100% at 100% 50%, rgba(80,40,5,0.45) 0%, transparent 100%),
+      linear-gradient(160deg, #ede3c0 0%, #e5d8aa 15%, #ede0b8 30%, #e0d0a0 50%, #e8dab0 70%, #dfd0a0 85%, #e8ddb5 100%);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+    position: relative;
+    box-shadow:
+      0 0 80px rgba(0,0,0,0.9),
+      inset 0 0 60px rgba(80,40,5,0.25),
+      inset 0 0 120px rgba(100,60,10,0.1);
+  }
+
+  .parchment-body::before {
+    content:''; position:absolute; inset:0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: 0.4; pointer-events:none; z-index:0;
+    mix-blend-mode: multiply;
+  }
+
+  .hero {
+    position: relative; z-index:1;
+    text-align: center;
+    padding: 3rem 3rem 2rem;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .hero::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(100,50,5,0.12) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .hero-rune-top {
+    font-family:'IM Fell English',serif;
+    font-style:italic;
+    font-size:0.7rem; letter-spacing:10px;
+    color:var(--gold); opacity:0.6;
+    margin-bottom:0.5rem;
+    text-transform:uppercase;
+  }
+
+  .hero-ornament {
+    font-size:2rem; color:var(--gold);
+    display:block; margin:0.5rem 0;
+    opacity:0; animation:fadeIn 1s 0.3s forwards;
+    text-shadow: 0 0 20px rgba(139,105,20,0.5);
+  }
+
+  .hero-title-main {
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:clamp(2.5rem,8vw,7rem);
+    color:var(--ink);
+    line-height:1;
+    text-shadow: 2px 3px 6px rgba(10,5,0,0.3), 0 0 40px rgba(139,105,20,0.15);
+    opacity:0; animation:fadeUp 1.2s 0.5s forwards;
+    letter-spacing:2px;
+  }
+
+  .hero-title-sub {
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:clamp(1.2rem,3vw,2.5rem);
+    color:var(--red);
+    text-shadow: 1px 2px 4px rgba(10,5,0,0.3);
+    opacity:0; animation:fadeUp 1s 0.9s forwards;
+    margin-top:0.3rem;
+  }
+
+  .hero-divider {
+    display:flex; align-items:center; justify-content:center;
+    gap:1rem; margin:1.5rem 0;
+    opacity:0; animation:fadeIn 1s 1.2s forwards;
+  }
+  .hero-divider::before, .hero-divider::after {
+    content:''; flex:1; max-width:200px; height:1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .hero-divider span { color:var(--gold); font-size:1.2rem; }
+
+  .hero-subtitle {
+    font-style:italic; font-size:1rem;
+    color:var(--ink-fade); letter-spacing:2px;
+    opacity:0; animation:fadeIn 1s 1.4s forwards;
+  }
+  .hero-scribe {
+    font-family:'Cinzel',serif; font-size:0.62rem;
+    letter-spacing:3px; color:var(--red); opacity:0;
+    margin-top:0.8rem; font-style:italic;
+    animation:fadeIn 1s 1.7s forwards;
+  }
+  .hero-scribe span { color:var(--red); font-style:normal; font-weight:600; }
+
+  .wax-seal {
+    display:block; width:70px; height:70px;
+    background:radial-gradient(circle at 38% 35%, #9b2010, #5a0a04);
+    border-radius:50%;
+    box-shadow:3px 5px 15px rgba(10,5,0,0.5), inset 0 0 15px rgba(0,0,0,0.4);
+    margin:0.8rem auto 0;
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:1.8rem; color:rgba(255,200,120,0.5);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .wax-seal::before {
+    content:''; position:absolute; inset:5px;
+    border-radius:50%;
+    border:1px solid rgba(255,180,80,0.2);
+  }
+
+  .stain {
+    position:absolute; pointer-events:none; z-index:0;
+    border-radius:50%; background:rgba(10,5,0,0.045);
+    filter:blur(8px);
+  }
+
+  .content { padding: 0 4rem; position:relative; z-index:1; }
+
+  .chapter {
+    margin: 3rem 0;
+    opacity:0; transform:translateY(15px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .chapter.visible { opacity:1; transform:translateY(0); }
+
+  .chapter-header {
+    display:flex; align-items:center; gap:1.5rem;
+    margin-bottom:1.5rem;
+  }
+
+  .chapter-num {
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:3.5rem; color:var(--red);
+    line-height:1; min-width:60px; text-align:center;
+    text-shadow: 1px 2px 4px rgba(10,5,0,0.2);
+    opacity:0.8;
+  }
+
+  .chapter-title-wrap { flex:1; }
+  .chapter-label {
+    font-family:'Cinzel',serif; font-size:0.55rem;
+    letter-spacing:5px; color:var(--gold);
+    text-transform:uppercase; display:block; margin-bottom:0.2rem;
+  }
+  .chapter-title {
+    font-family:'Cinzel',serif; font-size:clamp(1rem,2.5vw,1.6rem);
+    font-weight:900; color:var(--ink);
+    border-bottom:1px solid var(--parchment-dark);
+    padding-bottom:0.5rem;
+  }
+  .chapter-title span { color:var(--red); }
+
+  .drop-cap::first-letter {
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:4.5rem; float:left;
+    line-height:0.75; margin:0.1em 0.1em 0 0;
+    color:var(--red);
+    text-shadow: 2px 3px 6px rgba(10,5,0,0.25);
+  }
+
+  .chapter-text {
+    font-size:1.05rem; line-height:2;
+    color:var(--ink-fade);
+    text-align:justify;
+    margin-bottom:1.2rem;
+  }
+  .chapter-text strong { color:var(--ink); font-weight:normal; font-style:italic; }
+  .chapter-text .name { color:var(--red); font-style:italic; }
+  .chapter-text .myth { color:var(--gold); font-style:italic; }
+
+  .pull-quote {
+    float:right; width:220px; margin:0 0 1.5rem 2rem;
+    padding:1.2rem 1.5rem;
+    border:1px solid var(--gold);
+    border-left:4px solid var(--red);
+    background:rgba(139,105,20,0.06);
+    position:relative;
+  }
+  .pull-quote::before {
+    content:'❝';
+    position:absolute; top:-0.8rem; left:0.8rem;
+    font-size:2rem; color:var(--gold); opacity:0.4;
+    line-height:1;
+  }
+  .pull-quote p {
+    font-style:italic; font-size:0.9rem;
+    color:var(--ink); line-height:1.7;
+    text-align:center;
+  }
+  .pull-quote cite {
+    display:block; text-align:right;
+    font-family:'Cinzel',serif; font-size:0.5rem;
+    letter-spacing:2px; color:var(--gold);
+    text-transform:uppercase; margin-top:0.5rem;
+  }
+
+  .timeline {
+    margin:2rem 0;
+    border-left:2px solid var(--gold);
+    padding-left:2rem;
+  }
+  .timeline-item {
+    position:relative; margin-bottom:2rem;
+  }
+  .timeline-item::before {
+    content:''; position:absolute;
+    left:-2.4rem; top:0.4rem;
+    width:10px; height:10px;
+    border:2px solid var(--gold);
+    background:var(--parchment);
+    transform:rotate(45deg);
+  }
+  .timeline-era {
+    font-family:'Cinzel',serif; font-size:0.6rem;
+    letter-spacing:3px; color:var(--gold);
+    text-transform:uppercase; display:block; margin-bottom:0.3rem;
+  }
+  .timeline-title {
+    font-family:'Cinzel',serif; font-size:0.95rem;
+    font-weight:900; color:var(--red); margin-bottom:0.4rem;
+  }
+  .timeline-desc {
+    font-size:0.95rem; line-height:1.8; color:var(--ink-fade);
+  }
+
+  .seal-divider {
+    text-align:center; margin:2.5rem 0;
+    display:flex; align-items:center; gap:1.5rem;
+  }
+  .seal-divider::before, .seal-divider::after {
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  .seal-divider span {
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:1.8rem; color:var(--gold); opacity:0.5;
+  }
+
+  .scroll-bottom {
+    text-align:center; padding:2rem 3rem;
+    border-top:2px solid var(--gold);
+    position:relative; z-index:1;
+  }
+  .scroll-bottom-text {
+    font-family:'Cinzel',serif; font-size:0.55rem;
+    letter-spacing:5px; color:var(--gold);
+    text-transform:uppercase; opacity:0.6;
+    display:block; margin-bottom:0.5rem;
+  }
+  .scroll-seal {
+    font-family:'UnifrakturMaguntia',cursive;
+    font-size:1.5rem; color:var(--red); opacity:0.5;
+  }
+
+  .edge-top, .edge-bottom {
+    position:relative; z-index:2;
+    width:100%;
+    display:block;
+  }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .chapter-text-wrap::after { content:''; display:table; clear:both; }
+
+  @media(max-width:768px){
+    .content{padding:0 1.5rem;}
+    .pull-quote{float:none;width:auto;margin:1rem 0;}
+    .hero{padding:2rem 1.5rem 1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<div id="desk-bg"></div>
+<div id="desk-lamp"></div>
+<div id="lamp-glow"></div>
+<div id="light-cone"></div>
+<canvas id="dust-canvas"></canvas>
+
+<!-- QUILL PEN -->
+<div id="quill-wrap">
+  <svg width="200" height="680" viewBox="0 0 110 380" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="holderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#3d1f08"/>
+        <stop offset="30%" stop-color="#7a4018"/>
+        <stop offset="55%" stop-color="#a06030"/>
+        <stop offset="75%" stop-color="#7a4018"/>
+        <stop offset="100%" stop-color="#2e1505"/>
+      </linearGradient>
+      <linearGradient id="nibGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#2a2a2a"/>
+        <stop offset="25%" stop-color="#888"/>
+        <stop offset="50%" stop-color="#ccc"/>
+        <stop offset="75%" stop-color="#777"/>
+        <stop offset="100%" stop-color="#1a1a1a"/>
+      </linearGradient>
+      <linearGradient id="nibShine" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="inkDrop">
+        <feGaussianBlur stdDeviation="1.5" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+    </defs>
+    <path d="M48,90 C46,92 44,100 43,120 C42,145 41,175 41,210
+             C41,240 42,270 43,295 C44,315 46,330 48,340
+             L55,345 L62,340
+             C64,330 66,315 67,295 C68,270 69,240 69,210
+             C69,175 68,145 67,120 C66,100 64,92 62,90 Z"
+          fill="url(#holderGrad)" stroke="#1a0a02" stroke-width="1"/>
+    <path d="M50,100 C49,130 49,180 50,230 C50,270 51,310 52,338" stroke="rgba(0,0,0,0.15)" stroke-width="0.7" fill="none"/>
+    <path d="M55,95 C54,130 54,185 55,235 C55,272 56,312 57,340" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" fill="none"/>
+    <path d="M60,100 C61,130 61,180 60,230 C60,270 59,310 58,338" stroke="rgba(0,0,0,0.12)" stroke-width="0.7" fill="none"/>
+    <ellipse cx="55" cy="310" rx="12" ry="4" fill="#1a0a02" stroke="#c0a060" stroke-width="1.2"/>
+    <ellipse cx="55" cy="305" rx="12" ry="4" fill="#1a0a02" stroke="#c0a060" stroke-width="1.2"/>
+    <path d="M44,306 C46,304 50,303 55,303 C60,303 64,304 66,306" stroke="rgba(255,220,120,0.3)" stroke-width="1" fill="none"/>
+    <ellipse cx="55" cy="92" rx="8" ry="5" fill="#5a2810" stroke="#1a0a02" stroke-width="1"/>
+    <ellipse cx="55" cy="90" rx="6" ry="3" fill="#7a3a18" opacity="0.6"/>
+    <path d="M44,315 C44,318 46,322 55,324 C64,322 66,318 66,315 L66,295 C66,292 64,290 55,290 C46,290 44,292 44,295 Z"
+          fill="#555" stroke="#222" stroke-width="0.8"/>
+    <path d="M44,315 C44,312 46,310 55,310 C64,310 66,312 66,315" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" fill="none"/>
+    <path d="M46,295 L44,330 L55,358 L66,330 L64,295 Z"
+          fill="url(#nibGrad)" stroke="#111" stroke-width="1"/>
+    <path d="M47,297 L45,328 L52,350" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <line x1="55" y1="300" x2="55" y2="356" stroke="#000" stroke-width="1.2" opacity="0.7"/>
+    <ellipse cx="55" cy="308" rx="4" ry="2.5" fill="#000" opacity="0.5"/>
+    <path d="M51,352 L55,362 L59,352" fill="#333" stroke="#111" stroke-width="0.8"/>
+    <ellipse cx="55" cy="363" rx="3" ry="4.5" fill="rgba(5,2,0,0.95)" filter="url(#inkDrop)"/>
+    <path d="M55,367 C54,370 53,373 54,376 C54.5,378 55,379 55,379 C55,379 55.5,378 56,376 C57,373 56,370 55,367 Z"
+          fill="rgba(5,2,0,0.85)"/>
+    <path d="M48,312 C50,310 52,309 55,309 C58,309 60,310 62,312" stroke="rgba(255,255,255,0.15)" stroke-width="0.6" fill="none"/>
+    <path d="M49,95 C48,120 47,160 47,210 C47,255 48,295 49,330"
+          stroke="rgba(255,180,80,0.12)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M61,95 C62,120 63,160 63,210 C63,255 62,295 61,330"
+          stroke="rgba(0,0,0,0.2)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<!-- INK BOTTLE -->
+<div id="ink-bottle">
+  <svg width="90" height="130" viewBox="0 0 55 80" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bottleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0d0802"/>
+        <stop offset="30%" stop-color="#1a1005"/>
+        <stop offset="60%" stop-color="#221408"/>
+        <stop offset="100%" stop-color="#0d0802"/>
+      </linearGradient>
+    </defs>
+    <path d="M8,32 C7,33 6,38 6,42 L6,66 C6,70 9,73 14,74 L41,74 C46,73 49,70 49,66 L49,42 C49,38 48,33 47,32 Z"
+          fill="url(#bottleGrad)" stroke="#3a2010" stroke-width="1.5"/>
+    <path d="M10,34 C9,40 9,52 10,64" stroke="rgba(255,200,80,0.08)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M7,52 C7,51 8,50 27.5,50 C47,50 48,51 48,52 L48,66 C48,69 45,72 41,73 L14,73 C10,72 7,69 7,66 Z"
+          fill="rgba(4,2,0,0.96)"/>
+    <ellipse cx="27.5" cy="51" rx="14" ry="2" fill="rgba(80,40,5,0.4)"/>
+    <path d="M18,18 L18,32 L37,32 L37,18 Z" fill="url(#bottleGrad)" stroke="#3a2010" stroke-width="1.5"/>
+    <path d="M16,10 C16,9 18,7 27.5,7 C37,7 39,9 39,10 L39,20 C39,21 37,22 27.5,22 C18,22 16,21 16,20 Z"
+          fill="#a07030" stroke="#6a4818" stroke-width="1"/>
+    <ellipse cx="27.5" cy="10" rx="11.5" ry="3.5" fill="#b88040" stroke="#6a4818" stroke-width="1"/>
+    <path d="M19,11 C21,9 24,8 27.5,8 C31,8 34,9 36,11" stroke="rgba(255,220,120,0.25)" stroke-width="0.8" fill="none"/>
+    <rect x="10" y="38" width="35" height="16" rx="1.5" fill="rgba(180,140,60,0.1)" stroke="rgba(180,140,60,0.3)" stroke-width="0.8"/>
+    <line x1="13" y1="43" x2="42" y2="43" stroke="rgba(180,140,60,0.2)" stroke-width="0.5"/>
+    <line x1="13" y1="47" x2="38" y2="47" stroke="rgba(180,140,60,0.15)" stroke-width="0.5"/>
+    <ellipse cx="27.5" cy="76" rx="20" ry="3.5" fill="rgba(0,0,0,0.5)"/>
+  </svg>
+</div>
+
+<div class="outer-frame">
+<div class="parchment-body">
+
+  <svg class="edge-top" viewBox="0 0 960 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="height:40px;margin-bottom:-2px;">
+    <path d="M0,40 C80,28 160,38 240,30 C320,22 400,35 480,28 C560,20 640,33 720,26 C800,18 880,32 960,24 L960,0 L0,0 Z" fill="#0d0800"/>
+  </svg>
+
+  <div class="stain" style="width:120px;height:80px;top:8%;left:3%;transform:rotate(-15deg);"></div>
+  <div class="stain" style="width:60px;height:40px;top:22%;right:5%;transform:rotate(20deg);"></div>
+  <div class="stain" style="width:90px;height:60px;top:55%;left:2%;transform:rotate(8deg);"></div>
+  <div class="stain" style="width:50px;height:35px;top:70%;right:3%;transform:rotate(-10deg);"></div>
+  <div class="stain" style="width:80px;height:50px;top:88%;left:6%;transform:rotate(5deg);"></div>
+
+  <div class="hero">
+    <p class="hero-rune-top">✦ Codex Paradisiaca · Anno Domini Ignotus ✦</p>
+    <span class="hero-ornament">⚜</span>
+    <h1 class="hero-title-main">Les Chroniques</h1>
+    <h2 class="hero-title-sub">de Paradis</h2>
+    <div class="hero-divider"><span>✦</span></div>
+    <p class="hero-subtitle">Mémoire des Temps Anciens · Écrits par les Premiers Chroniqueurs du Royaume</p>
+    <p class="hero-scribe">— Copié & enluminé par <span>Manatsu</span>, Scribe du Corps d'Exploration —</p>
+    <div class="wax-seal" style="margin-top:1.2rem;">⚜</div>
+  </div>
+
+  <div class="content">
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">I</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">Le Temps d'Avant</span>
+          <h3 class="chapter-title">Quand la Terre <span>Appartenait aux Titans</span></h3>
+        </div>
+      </div>
+      <div class="chapter-text-wrap">
+        <p class="chapter-text drop-cap">Que le fidèle lise ces mots et s'en souvienne jusqu'à son dernier souffle. Avant les Murs Sacrés, avant la grâce que le Seigneur du Royaume accorda à notre peuple, la terre entière était un enfer. Les titans marchaient sous tous les cieux. Ils couvraient les plaines, ils descendaient les collines, ils envahissaient les cités que les hommes avaient eu l'audace de bâtir. Et partout où ils passaient, ils ne laissaient que le silence et les ossements.</p>
+        <p class="chapter-text">L'humanité n'avait pas de refuge. Elle fuyait, elle se terrait, elle mourait. Des nations entières furent réduites à néant en l'espace d'une génération. Ce que nos ancêtres avaient mis des siècles à construire — des villes, des routes, des bibliothèques, des cathédrales — disparaissait en quelques heures sous les pas des géants. <span class="myth">C'était la fin du monde. Non pas une fin que Dieu avait promise — une fin que les titans accomplissaient chaque jour, méthodiquement, sans haine et sans raison.</span></p>
+        <p class="chapter-text">Ceux qui survécurent à cette époque ne parlaient pas de ce qu'ils avaient vu. Ils ne pouvaient pas. Les mots n'existaient pas pour décrire la totalité de cette destruction. Tout ce que nous savons de ce temps-là, c'est que notre peuple était au bord de l'extinction. Et que sans ce qui allait suivre, il n'en serait rien resté.</p>
+      </div>
+    </div>
+
+    <div class="seal-divider"><span>⚜</span></div>
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">II</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">Le Miracle Fondateur</span>
+          <h3 class="chapter-title">Les Trois Murs <span>Sacrés</span></h3>
+        </div>
+      </div>
+      <div class="chapter-text-wrap">
+        <div class="pull-quote">
+          <p>« Il dressa les murs et l'humanité respira. Ce souffle, nous le devons à sa grâce. Ne l'oublions jamais. »</p>
+          <cite>— Premier Livre des Fondations, verset III</cite>
+        </div>
+        <p class="chapter-text drop-cap">Puis vint le Roi. Par sa volonté et par sa puissance — que les fidèles ne cherchent pas à comprendre mais à vénérer — il fit surgir du sol les trois Murs Sacrés. <span class="name">Maria</span>, muraille extérieure, première ligne dressée contre le monde hostile. <span class="name">Rose</span>, muraille intermédiaire, cœur nourricier des terres cultivées. <span class="name">Sina</span>, muraille intérieure, sanctuaire du Roi et de sa cour, demeure de la grâce royale.</p>
+        <p class="chapter-text">Chaque mur s'élève à cinquante mètres de hauteur. Cinquante mètres que les titans ne peuvent franchir. Cinquante mètres entre notre peuple et l'extinction. Ce n'est pas de la pierre que le Roi a dressée — c'est un miracle. C'est la main de Dieu rendue visible dans la matière du monde. Et quiconque douterait de la nature divine de cet acte n'a qu'à regarder autour de lui : nous vivons. Nous respirons. Nous prions. Pendant que dehors, les titans errent sans fin.</p>
+        <p class="chapter-text">C'est en cet An Zéro que naquit <span class="myth">la Société de Paradis</span>. Un peuple neuf, né dans la grâce des Murs, qui apprit à bâtir, à cultiver et à louer le nom du Roi pour le don inestimable de sa protection.</p>
+      </div>
+    </div>
+
+    <div class="seal-divider"><span>⚜</span></div>
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">III</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">Mémoire du Royaume</span>
+          <h3 class="chapter-title">Les Âges <span>de Paradis</span></h3>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <span class="timeline-era">An Zéro — La Fondation</span>
+          <div class="timeline-title">Érection des Trois Murs Sacrés</div>
+          <p class="timeline-desc">Par la volonté du Roi, les trois murailles s'élèvent et offrent à l'humanité son dernier refuge. Maria, Rose, Sina — trois cercles de grâce tracés autour du dernier peuple survivant. La Société de Paradis naît entre leurs flancs de pierre.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-era">An 773</span>
+          <div class="timeline-title">L'Essor du Royaume</div>
+          <p class="timeline-desc">Naissance de la Cité Industrielle, premier grand chantier du Royaume depuis la Fondation. Les ingénieurs du Roi conçoivent la Manœuvre Tridimensionnelle — outil révolutionnaire qui permettra à nos soldats de se battre à la hauteur des titans — ainsi que le Sabre en acier renforcé, seule lame capable de sectionner la nuque d'un titan. En cette même année, les titans s'approchent des Murs pour la première fois depuis leur création. Le premier soldat paradisien tue un titan de sa propre main.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-era">An 788</span>
+          <div class="timeline-title">L'Ordre Retrouvé</div>
+          <p class="timeline-desc">Le Culte des Titans et les mouvements de Dissidence qui menaçaient la cohésion du Royaume sont mis à bas. La Manœuvre Tridimensionnelle est finalisée dans sa forme définitive et distribuée aux régiments. Le Royaume entre dans une période de stabilité et de consolidation.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-era">An 832</span>
+          <div class="timeline-title">Épidémie au District de Shiganshina</div>
+          <p class="timeline-desc">Une épidémie frappe le District de Shiganshina, rappelant à tous les habitants des Murs que les titans ne sont pas les seuls ennemis de l'humanité. Le Corps Médical et les régiments de la Garnison interviennent pour contenir le fléau.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-era">An 847</span>
+          <div class="timeline-title">Début de la 104ème Brigade d'Entraînement</div>
+          <p class="timeline-desc">Le Corps d'Instruction accueille une nouvelle génération de soldats au sein de la 104ème Brigade d'Entraînement. Ces jeunes recrues portent en elles l'espoir du Royaume — demain, elles défendront les Murs Sacrés et feront reculer les titans.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-era">An 849</span>
+          <div class="timeline-title">34ème Expédition Extra-Muros</div>
+          <p class="timeline-desc">Le Bataillon d'Exploration conduit sa 34ème expédition au-delà du Mur Maria. Nos soldats avancent dans les terres hostiles où rôdent les titans, cherchant à percer le mystère de leur nature et de leur prolifération. Chaque homme qui franchit la porte sait qu'il risque de ne jamais revenir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="seal-divider"><span>⚜</span></div>
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">IV</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">L'Organisation Sacrée</span>
+          <h3 class="chapter-title">La Structure <span>du Royaume</span></h3>
+        </div>
+      </div>
+      <div class="chapter-text-wrap">
+        <div class="pull-quote">
+          <p>« Le Roi règne, les nobles servent, les soldats protègent. Telle est l'harmonie voulue par les Murs. »</p>
+          <cite>— Traité des Fondements du Royaume, chapitre II</cite>
+        </div>
+        <p class="chapter-text drop-cap">Le Royaume de Paradis n'est pas seulement un territoire délimité par trois murs de pierre. C'est un ordre. Une volonté. Une hiérarchie voulue par la grâce royale pour que chaque homme ait sa place, chaque institution son rôle, et que jamais l'humanité ne retombe dans le chaos qui précéda les Murs.</p>
+        <p class="chapter-text">À son sommet trône <span class="name">le Roy</span>, dont l'autorité est absolue et sacrée, assisté de son <span class="name">Principal Ministre</span>. Ensemble ils gouvernent les affaires d'État à travers un gouvernement de ministères et de secrétariats. La noblesse — Ducs, Marquis, Comtes, Vicomtes et Barons — administre les fiefs selon les juridictions en vigueur. Le <span class="name">Sénat</span>, constitué en majorité de nobles, vote les lois que le Roy propose. <span class="myth">Nul homme ne vit seul entre les Murs. Nul n'est sans maître, nul n'est sans devoir.</span></p>
+      </div>
+    </div>
+
+    <div class="seal-divider"><span>⚜</span></div>
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">V</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">Le Bras Armé du Royaume</span>
+          <h3 class="chapter-title">Les <span>Corps Militaires</span></h3>
+        </div>
+      </div>
+      <div class="chapter-text-wrap">
+        <p class="chapter-text drop-cap">Face à la menace permanente des titans, le Royaume a érigé une armée à la hauteur de son destin. Placée sous l'autorité du <span class="name">Généralissime</span>, elle se compose de plusieurs corps distincts dont les missions se complètent et se renforcent. Tout fidèle du Royaume doit connaître ces corps — car ce sont eux qui se dressent entre l'humanité et l'extinction.</p>
+        <p class="chapter-text"><span class="name">La Brigade Spéciale</span> est le bras judiciaire et sécuritaire du Royaume. Forte de deux mille hommes auxquels s'ajoutent cinq mille de la Garnison, elle combat le feu, encadre les prisons et assure l'ordre au sein même des Murs. C'est l'autorité visible dans les rues de nos cités.</p>
+        <p class="chapter-text"><span class="name">La Garnison</span> tient les Murs. Trente mille hommes dont dix mille effectifs, déployés sur les remparts de Rose et Sina. Ce sont eux qui font face aux titans lorsque ceux-ci s'approchent. Ils assurent également le maintien de l'ordre en soutien de la Brigade Spéciale. <span class="myth">Sans la Garnison, les Murs ne seraient que de la pierre.</span> En son sein opère le <span class="name">Corps d'Instruction</span>, branche dédiée à la formation des recrues dans les camps d'entraînement du Royaume. Ces soldats-instructeurs, issus des rangs de l'armée, sont chargés de forger les futures brigades — leur transmettre le maniement du sabre, la maîtrise de la Manœuvre Tridimensionnelle, et la discipline sans laquelle aucun homme ne survit entre les Murs ni au-delà.</p>
+        <p class="chapter-text">Il convient de noter que le Mur <span class="name">Maria</span> n'est plus sous notre contrôle. Un titan d'une stature hors du commun, fait de chair et se distinguant par sa taille colossale, a percé sa muraille extérieure. Dans la confusion qui s'ensuivit, un second titan parvint à enfoncer les portes. De ceux qui le virent de leurs propres yeux, <span class="myth">nul n'est revenu pour en livrer le moindre témoignage.</span> Maria est perdue. Ce que les Murs ont donné, les titans peuvent le reprendre — que cette vérité grave à jamais dans le cœur de chaque soldat du Royaume.</p>
+        <p class="chapter-text">Enfin, le plus coûteux et le plus contesté des corps : <span class="name">le Bataillon d'Exploration</span>. Trois cents hommes — trois cents bouches à nourrir, trois cents équipements à entretenir, deux chevaux par soldat, des réserves de gaz pour la Manœuvre Tridimensionnelle, des lames consumées par chaque sortie. Le tout financé par le contribuable paradisien, pour des expéditions dont le bilan, mission après mission, se résume en pertes humaines et en territoires jamais tenus. <span class="myth">On les admire dans les chansons de taverne. On les pleure dans les registres du Trésor Royal.</span> Que leurs membres soient fous ou simplement inconscients du poids qu'ils font peser sur le Royaume, l'histoire jugera — si tant est qu'il reste assez d'archives pour la consigner.</p>
+      </div>
+    </div>
+
+    <div class="seal-divider"><span>⚜</span></div>
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">VI</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">La Foi du Peuple</span>
+          <h3 class="chapter-title">Que les Murs <span>Nous Gardent</span></h3>
+        </div>
+      </div>
+      <div class="chapter-text-wrap">
+        <p class="chapter-text drop-cap">Voilà ce que tout enfant de Paradis doit savoir avant même de savoir lire. Avant les Murs, il n'y avait rien. Les titans régnaient et l'humanité mourait. Puis le Roi dressa les murailles et nous fûmes sauvés. Cette vérité n'est pas une légende — c'est le fondement de tout ce que nous sommes.</p>
+        <p class="chapter-text">Les Murs ne sont pas de simples constructions. Ce sont des reliques sacrées. Des témoins de la grâce royale. Quiconque s'agenouille face à leur flanc de pierre et écoute vraiment peut sentir quelque chose — quelque chose de plus grand que lui, quelque chose de vieux et de stable comme la foi elle-même. <span class="myth">Les Murs nous regardent. Les Murs nous protègent. Les Murs sont notre salut.</span></p>
+        <p class="chapter-text">Que Rose nous nourrisse. Que Sina nous guide. Et que le nom du Roi soit loué dans les siècles des siècles — lui qui, dans la plus grande obscurité que l'humanité ait jamais connue, a eu la force de dresser la lumière.</p>
+      </div>
+    </div>
+
+    <div class="seal-divider"><span>⚜</span></div>
+
+    <div class="chapter">
+      <div class="chapter-header">
+        <div class="chapter-num">VII</div>
+        <div class="chapter-title-wrap">
+          <span class="chapter-label">Le Jour de la Rupture</span>
+          <h3 class="chapter-title">La Chute du <span>Mur Maria</span></h3>
+        </div>
+      </div>
+      <div class="chapter-text-wrap">
+        <div class="pull-quote">
+          <p>« Ce matin-là, le ciel était clair. Puis le sol trembla. Et rien ne fut jamais plus comme avant. »</p>
+          <cite>— Témoignage d'un réfugié du District de Shiganshina, an 850</cite>
+        </div>
+        <p class="chapter-text drop-cap">Il est des événements que l'histoire n'ose pas nommer trop vite — comme si les mettre en mots les rendait plus réels, plus définitifs. La chute du Mur Maria est de ceux-là. Depuis l'an 743, la première muraille avait tenu. Elle avait résisté aux vents, aux saisons, au temps lui-même. Elle était la preuve vivante que la grâce royale ne fléchissait pas. Et puis vint ce jour.</p>
+        <p class="chapter-text">Ce que les survivants décrivent en premier, ce n'est pas le bruit — c'est l'ombre. Une ombre qui n'existait pas l'instant d'avant et qui soudainement couvrit le District de Shiganshina tout entier. Un titan d'une stature que nul œil paradisien n'avait jamais contemplé — fait de chair, animé d'une présence qui dépassait l'entendement ordinaire des géants, et se distinguant par une taille si démesurée qu'il dominait le sommet du Mur Maria lui-même. <span class="myth">Cinquante mètres de muraille sacrée. Et ce titan les surplombait.</span></p>
+        <p class="chapter-text">Le coup fut d'une violence sans précédent. La muraille extérieure de Maria, dressée par la volonté du Roi depuis l'An Zéro, céda. Non pas progressivement — elle céda d'un seul coup, comme si les huit cent cinquante années de sa résistance n'avaient compté pour rien. Les pierres qui tombèrent ce jour-là étaient les mêmes que celles que le premier peuple de Paradis avait regardées avec révérence. Elles s'écrasèrent dans les rues de Shiganshina dans un fracas qui s'entendit jusqu'au Mur Rose.</p>
+        <p class="chapter-text">Mais la brèche ne fut que le début. Dans la confusion qui suivit l'effondrement — les soldats de la Garnison dépassés, les civils en fuite, les titans ordinaires déjà en train de s'engouffrer par le trou béant — un second titan fit son apparition devant les portes intérieures du district. Ce que l'on sait de lui se résume à peu de choses : il frappa les portes, et les portes cédèrent. <span class="myth">De ceux qui se trouvaient assez près pour voir sa forme, son visage, ses proportions — nul ne revint.</span> Leurs noms figurent dans les registres de la Garnison. Leurs descriptions, elles, n'y figurent pas.</p>
+        <p class="chapter-text">Le District de Shiganshina fut abandonné avant la tombée de la nuit. Les terres cultivées du territoire de Maria suivirent dans les jours qui vinrent. Des centaines de milliers de réfugiés se déversèrent vers le Mur Rose, portant sur le dos ce qu'ils avaient pu sauver — et dans les yeux ce qu'aucun rapport officiel ne consigna jamais vraiment. Le Royaume avait perdu un tiers de son territoire, la quasi-totalité de ses terres agricoles extérieures, et quelque chose de plus difficile à mesurer : la certitude que les Murs étaient inviolables.</p>
+        <p class="chapter-text"><span class="myth">Maria est perdue. Ce que les Murs ont donné, les titans peuvent le reprendre.</span> Tout le monde le sait maintenant. Il n'y a plus de place pour croire que les Murs sont invincibles. Ce qui reste — Rose et Sina — on doit le tenir. C'est tout ce qu'il nous reste.</p>
+      </div>
+    </div>
+
+    </div><!-- /content -->
+
+  <div class="scroll-bottom">
+    <span class="scroll-bottom-text">✦ Fin du Premier Livre des Chroniques · Ce manuscrit fut copié sous la supervision du Grand Archiviste de Sina ✦</span>
+    <div class="hero-divider" style="opacity:0.5;"><span>✦</span></div>
+    <span class="scroll-seal">Paradis Æterna</span>
+    <div class="wax-seal" style="margin:1.5rem auto 0.5rem;">⚜</div>
+    <p style="font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:4px;color:var(--red);opacity:0.6;margin-top:0.5rem;font-style:italic;">— par Manatsu, Scribe du Corps d'Exploration —</p>
+  </div>
+
+  <svg viewBox="0 0 960 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:40px;margin-top:-2px;display:block;">
+    <path d="M0,0 C80,12 160,2 240,10 C320,18 400,5 480,12 C560,20 640,7 720,14 C800,22 880,8 960,16 L960,40 L0,40 Z" fill="#0d0800"/>
+  </svg>
+
+</div><!-- /parchment-body -->
+</div><!-- /outer-frame -->
+
+<script>
+const canvas = document.getElementById('dust-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+function rand(a,b){ return Math.random()*(b-a)+a; }
+
+class DustMote {
+  constructor(){ this.reset(true); }
+  reset(init){
+    this.x=rand(0,W); this.y=init?rand(0,H):H+5;
+    this.size=rand(0.3,1.2);
+    this.speedY=rand(-0.3,-0.06); this.speedX=rand(-0.1,0.1);
+    this.opacity=rand(0.05,0.2); this.life=rand(0.5,1);
+    this.decay=rand(0.0003,0.0015);
+    this.hue=rand(35,50);
+  }
+  update(){
+    this.x+=this.speedX+Math.sin(this.y*0.01)*0.08;
+    this.y+=this.speedY; this.life-=this.decay;
+    if(this.y<-5||this.life<=0) this.reset(false);
+  }
+  draw(){
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${this.hue},60%,70%,${this.opacity*this.life})`; ctx.fill();
+  }
+}
+
+const motes = Array.from({length:120},()=>new DustMote());
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  motes.forEach(m=>{m.update();m.draw();});
+  requestAnimationFrame(animate);
+}
+animate();
+
+const chapters = document.querySelectorAll('.chapter');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.06});
+chapters.forEach(c=>obs.observe(c));
+</script>
+</body>
+</html>
